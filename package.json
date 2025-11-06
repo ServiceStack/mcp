@@ -9,7 +9,10 @@
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "bump": "npm version patch && git push origin main --follow-tags",
+    "bump:minor": "npm version minor && git push origin main --follow-tags",
+    "bump:major": "npm version major && git push origin main --follow-tags"
   },
   "keywords": [
     "mcp",
