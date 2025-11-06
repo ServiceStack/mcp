@@ -252,3 +252,34 @@ Content-Type: application/json
 ```
 
 This will return the type in the **response**, e.g. the `CreatePostResponse` Response DTO.
+
+## Deployment
+
+### Publishing to npm
+
+This package is automatically published to npm via GitHub Actions when a new release is created.
+
+#### Prerequisites
+
+Before publishing, ensure the `NPM_TOKEN` secret is configured in your GitHub repository:
+
+1. Generate an npm access token at https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+   - Select "Automation" token type for CI/CD usage
+2. Add the token as a repository secret:
+   - Go to your GitHub repository settings
+   - Navigate to Secrets and variables > Actions
+   - Create a new secret named `NPM_TOKEN` with your npm token
+
+#### Publishing
+
+To publish a new version:
+
+1. **Via GitHub Release** (Recommended):
+   - Create a new release on GitHub
+   - The workflow will automatically build and publish to npm
+
+2. **Via Manual Workflow**:
+   - Go to Actions > "Publish to npm" workflow
+   - Click "Run workflow"
+   - Optionally specify a version (e.g., `1.0.1`, `patch`, `minor`, `major`)
+   - If no version is specified, it will use the version in `package.json`
