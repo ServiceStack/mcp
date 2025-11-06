@@ -1,0 +1,32 @@
+{
+  "name": "mcp-apis",
+  "version": "1.0.0",
+  "description": "MCP Server for ServiceStack APIs",
+  "type": "module",
+  "bin": {
+    "mcp-apis": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "mcp",
+    "servicestack",
+    "api",
+    "server"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
