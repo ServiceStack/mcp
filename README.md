@@ -15,7 +15,7 @@ You can also filter the APIs to only include those with a specific tag, e.g:
 npx mcp-apis ./app.json --tag TechStacks
 ```
 
-Or a specific list of one:
+Or a specific API:
 
 ```bash
 npx mcp-apis ./app.json --apis QueryPost
