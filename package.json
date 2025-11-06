@@ -1,6 +1,6 @@
 {
   "name": "mcp-apis",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP Server for ServiceStack APIs",
   "type": "module",
   "bin": {
