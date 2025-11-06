@@ -12,9 +12,26 @@ This MCP server allows Claude to:
 
 ## Getting Your ServiceStack API Metadata
 
-Before using this tool, you need to export your ServiceStack API metadata to an `app.json` file. ServiceStack automatically generates this metadata at the `/metadata/app.json` endpoint of your application.
+ServiceStack automatically generates API metadata at the `/metadata/app.json` endpoint of your application. You can use this tool in two ways:
 
-### Download Your app.json
+### Option 1: Use URL Directly (Recommended)
+
+Point directly to your ServiceStack API URL - the tool will automatically fetch the metadata:
+
+```bash
+# Using base URL (will automatically fetch /metadata/app.json)
+npx mcp-apis https://your-api.com
+
+# Or for local development
+npx mcp-apis https://localhost:5001
+
+# You can also specify the full metadata path
+npx mcp-apis https://your-api.com/metadata/app.json
+```
+
+### Option 2: Download app.json File
+
+Alternatively, download the metadata file first:
 
 ```bash
 # Download from your ServiceStack application
@@ -26,27 +43,35 @@ curl https://localhost:5001/metadata/app.json > app.json
 
 ## Quick Start
 
-Once you have your `app.json` file, you can run the MCP server:
+You can run the MCP server with either a URL or local file:
 
 ```bash
+# Using a URL (recommended)
+npx mcp-apis https://your-api.com
+
+# Using a local file
 npx mcp-apis ./app.json
 ```
 
-You can also filter the APIs to only include those with a specific tag, e.g:
+### Filtering APIs
+
+Filter by tag:
 
 ```bash
+# With URL
+npx mcp-apis https://your-api.com --tag Posts
+
+# With local file
 npx mcp-apis ./app.json --tag TechStacks
 ```
 
-Or a specific API:
+Filter specific APIs:
 
 ```bash
-npx mcp-apis ./app.json --apis QueryPost
-```
+# Single API
+npx mcp-apis https://your-api.com --apis QueryPost
 
-Or multiple APIs:
-
-```bash
+# Multiple APIs
 npx mcp-apis ./app.json --apis QueryPosts,CreatePost,UpdatePost,DeletePost
 ```
 
@@ -64,6 +89,24 @@ To use this MCP server with the Claude Desktop app, add it to your Claude Deskto
 
 Add the following configuration:
 
+**Using a URL (recommended):**
+
+```json
+{
+  "mcpServers": {
+    "servicestack": {
+      "command": "npx",
+      "args": [
+        "mcp-apis",
+        "https://your-api.com"
+      ]
+    }
+  }
+}
+```
+
+**Using a local file:**
+
 ```json
 {
   "mcpServers": {
@@ -78,7 +121,7 @@ Add the following configuration:
 }
 ```
 
-For example, if your app.json is in your home directory:
+**Example with filtering:**
 
 ```json
 {
@@ -87,7 +130,7 @@ For example, if your app.json is in your home directory:
       "command": "npx",
       "args": [
         "mcp-apis",
-        "/Users/yourname/projects/techstacks/app.json",
+        "https://techstacks.io",
         "--tag",
         "Posts"
       ]
@@ -104,7 +147,23 @@ To use this MCP server with Claude Code, add it to your MCP settings file:
 
 **Location:** `~/.config/claude-code/mcp_settings.json`
 
-Add the following configuration:
+**Using a URL (recommended):**
+
+```json
+{
+  "mcpServers": {
+    "servicestack": {
+      "command": "npx",
+      "args": [
+        "mcp-apis",
+        "https://your-api.com"
+      ]
+    }
+  }
+}
+```
+
+**Using a local file:**
 
 ```json
 {
@@ -120,7 +179,7 @@ Add the following configuration:
 }
 ```
 
-Example with filtering options:
+**Example with filtering:**
 
 ```json
 {
@@ -129,7 +188,7 @@ Example with filtering options:
       "command": "npx",
       "args": [
         "mcp-apis",
-        "/home/user/projects/myapp/app.json",
+        "https://my-api.com",
         "--apis",
         "QueryPosts,CreatePost,UpdatePost"
       ]
@@ -143,6 +202,24 @@ After saving, restart Claude Code. You can verify the MCP server is connected by
 ### Per-Project Configuration (Claude Code)
 
 For project-specific MCP servers, create a `.mcp_settings.json` file in your project root:
+
+**Using a URL:**
+
+```json
+{
+  "mcpServers": {
+    "local-api": {
+      "command": "npx",
+      "args": [
+        "mcp-apis",
+        "https://localhost:5001"
+      ]
+    }
+  }
+}
+```
+
+**Using a local file:**
 
 ```json
 {

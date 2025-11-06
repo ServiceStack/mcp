@@ -7,11 +7,74 @@ import { resolve } from 'path';
 import type { AppMetadata, Operation, CliOptions } from './types.js';
 
 /**
- * Load and parse the app.json metadata file
+ * Check if a string is a URL
+ */
+function isUrl(str: string): boolean {
+  try {
+    const url = new URL(str);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Normalize URL to metadata endpoint
+ * If the URL doesn't end with app.json, append /metadata/app.json
+ */
+function normalizeMetadataUrl(urlStr: string): string {
+  // Ensure proper URL format
+  if (!urlStr.startsWith('http://') && !urlStr.startsWith('https://')) {
+    urlStr = 'https://' + urlStr;
+  }
+
+  const url = new URL(urlStr);
+
+  // If the path already ends with .json, assume it's the full metadata path
+  if (url.pathname.endsWith('.json')) {
+    return url.toString();
+  }
+
+  // Otherwise, append /metadata/app.json to the base URL
+  // Remove trailing slash if present
+  const basePath = url.pathname.replace(/\/$/, '');
+  url.pathname = basePath + '/metadata/app.json';
+
+  return url.toString();
+}
+
+/**
+ * Fetch app.json from a URL
+ */
+async function fetchAppMetadata(urlStr: string): Promise<string> {
+  const normalizedUrl = normalizeMetadataUrl(urlStr);
+
+  console.error(`Fetching metadata from: ${normalizedUrl}`);
+
+  const response = await fetch(normalizedUrl);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch metadata: ${response.status} ${response.statusText}`);
+  }
+
+  return await response.text();
+}
+
+/**
+ * Load and parse the app.json metadata file or URL
  */
 export async function loadAppMetadata(configPath: string): Promise<AppMetadata> {
-  const fullPath = resolve(configPath);
-  const content = await readFile(fullPath, 'utf-8');
+  let content: string;
+
+  // Check if configPath is a URL
+  if (isUrl(configPath)) {
+    content = await fetchAppMetadata(configPath);
+  } else {
+    // Load from file system
+    const fullPath = resolve(configPath);
+    content = await readFile(fullPath, 'utf-8');
+  }
+
   const metadata = JSON.parse(content) as AppMetadata;
 
   if (!metadata.app || !metadata.app.baseUrl) {

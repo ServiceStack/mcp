@@ -17,10 +17,13 @@ async function main() {
 ServiceStack MCP Server
 
 Usage:
-  npx mcp-apis <config-file> [options]
+  npx mcp-apis <config-file|url> [options]
 
 Arguments:
-  config-file    Path to app.json metadata file
+  config-file|url    Path to app.json metadata file or URL to ServiceStack API
+                     URLs can be:
+                     - Base URL: https://your-api.com (will fetch /metadata/app.json)
+                     - Full metadata URL: https://your-api.com/metadata/app.json
 
 Options:
   --tag <tag>           Filter APIs by tag
@@ -28,10 +31,17 @@ Options:
   --help, -h            Show this help message
 
 Examples:
+  # Local file
   npx mcp-apis ./app.json
   npx mcp-apis ./app.json --tag TechStacks
-  npx mcp-apis ./app.json --apis QueryPost
-  npx mcp-apis ./app.json --apis QueryPosts,CreatePost,UpdatePost,DeletePost
+
+  # From URL (base URL)
+  npx mcp-apis https://your-api.com
+  npx mcp-apis https://localhost:5001 --tag Posts
+
+  # From URL (full metadata path)
+  npx mcp-apis https://your-api.com/metadata/app.json
+  npx mcp-apis https://your-api.com/metadata/app.json --apis QueryPosts,CreatePost
       `);
       process.exit(0);
     }
