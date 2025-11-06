@@ -1,9 +1,32 @@
-ServiceStack MCP Server
+# ServiceStack MCP Server
 
-Launches an MCP Server that creates an MCP Server for the APIs defined in the specififed configuration file.
+An MCP (Model Context Protocol) Server that enables Claude to interact with ServiceStack APIs. This tool transforms your ServiceStack API metadata into an MCP server, allowing Claude to discover and invoke your APIs through natural language.
 
-Specifying the app.json metadata configuration file will create an MCP Server for all APIs defined in the app.json file.
+## What is this?
 
+This MCP server allows Claude to:
+- Discover all available APIs from your ServiceStack application
+- Understand the request/response schemas
+- Invoke APIs with proper parameters
+- Handle authentication when required
+
+## Getting Your ServiceStack API Metadata
+
+Before using this tool, you need to export your ServiceStack API metadata to an `app.json` file. ServiceStack automatically generates this metadata at the `/metadata/app.json` endpoint of your application.
+
+### Download Your app.json
+
+```bash
+# Download from your ServiceStack application
+curl https://your-api.com/metadata/app.json > app.json
+
+# Or for local development
+curl https://localhost:5001/metadata/app.json > app.json
+```
+
+## Quick Start
+
+Once you have your `app.json` file, you can run the MCP server:
 
 ```bash
 npx mcp-apis ./app.json
@@ -253,33 +276,90 @@ Content-Type: application/json
 
 This will return the type in the **response**, e.g. the `CreatePostResponse` Response DTO.
 
-## Deployment
+## Connecting with Claude Desktop
 
-### Publishing to npm
+To use this MCP server with Claude Desktop, you need to configure it in your Claude Desktop configuration file.
 
-This package is automatically published to npm via GitHub Actions when a new release is created.
+### Configuration
 
-#### Prerequisites
+The configuration file location depends on your operating system:
 
-Before publishing, ensure the `NPM_TOKEN` secret is configured in your GitHub repository:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux**: `~/.config/Claude/claude_desktop_config.json`
 
-1. Generate an npm access token at https://www.npmjs.com/settings/YOUR_USERNAME/tokens
-   - Select "Automation" token type for CI/CD usage
-2. Add the token as a repository secret:
-   - Go to your GitHub repository settings
-   - Navigate to Secrets and variables > Actions
-   - Create a new secret named `NPM_TOKEN` with your npm token
+Add the following to your configuration file:
 
-#### Publishing
+```json
+{
+  "mcpServers": {
+    "servicestack": {
+      "command": "npx",
+      "args": [
+        "mcp-apis",
+        "/absolute/path/to/your/app.json"
+      ]
+    }
+  }
+}
+```
 
-To publish a new version:
+Replace `/absolute/path/to/your/app.json` with the actual path to your ServiceStack API metadata file.
 
-1. **Via GitHub Release** (Recommended):
-   - Create a new release on GitHub
-   - The workflow will automatically build and publish to npm
+### Filtering APIs
 
-2. **Via Manual Workflow**:
-   - Go to Actions > "Publish to npm" workflow
-   - Click "Run workflow"
-   - Optionally specify a version (e.g., `1.0.1`, `patch`, `minor`, `major`)
-   - If no version is specified, it will use the version in `package.json`
+You can also filter which APIs are exposed to Claude by adding additional arguments:
+
+#### Filter by Tag
+
+```json
+{
+  "mcpServers": {
+    "servicestack": {
+      "command": "npx",
+      "args": [
+        "mcp-apis",
+        "/absolute/path/to/your/app.json",
+        "--tag",
+        "Posts"
+      ]
+    }
+  }
+}
+```
+
+#### Filter by Specific APIs
+
+```json
+{
+  "mcpServers": {
+    "servicestack": {
+      "command": "npx",
+      "args": [
+        "mcp-apis",
+        "/absolute/path/to/your/app.json",
+        "--apis",
+        "QueryPosts,CreatePost,UpdatePost,DeletePost"
+      ]
+    }
+  }
+}
+```
+
+### After Configuration
+
+1. Save the configuration file
+2. Restart Claude Desktop
+3. Look for the hammer icon (🔨) in Claude Desktop to confirm the MCP server is connected
+4. You can now ask Claude to interact with your ServiceStack APIs!
+
+## Example Usage with Claude
+
+Once connected, you can ask Claude to interact with your APIs:
+
+- "List all posts from my ServiceStack API"
+- "Create a new post with the title 'Hello World'"
+- "Get the post with ID 123"
+- "Update post 456 with a new title"
+
+Claude will automatically discover the available APIs, understand their schemas, and make the appropriate HTTP requests to your ServiceStack application.
